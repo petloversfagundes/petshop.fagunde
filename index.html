@@ -210,6 +210,7 @@ save();head();produtos();servicos();resumo()});
 
 $("cat").innerHTML='<option value="">Todas as categorias</option>'+CATS.map(x=>`<option>${esc(x[0])}</option>`).join("");
 render();
+if(location.hash=="#admin")show("admin");
 fetch("dados.json?v="+Date.now()).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.prod){S=d;fix()}
 if(GH){try{const dr=JSON.parse(localStorage.getItem("petshop_draft"));if(dr&&dr.prod){S=dr;fix();dirty=true}}catch(e){}}
 render()}).catch(()=>{});
