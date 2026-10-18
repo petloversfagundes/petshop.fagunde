@@ -60,14 +60,14 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;fon
 <h1 id="nomeLoja">Pet Shop</h1>
 <p class="subtitulo" id="sub">Escolha os produtos e faça seu pedido pelo WhatsApp 🐾</p>
 <div class="abas"><button data-a="loja" class="on">Produtos</button><button data-a="banho">Banho e tosa</button></div>
-
+ 
 <div id="loja">
  <div class="filtros"><input id="busca" placeholder="Buscar produto..."><select id="cat"></select></div>
  <div class="produtos" id="produtos"></div>
  <div class="formulario">
   <h2>Seus dados</h2>
-  <label>Nome</label><input id="nome" placeholder="Pet shop Fagundes">
-  <label>WhatsApp</label><input id="telefone" type="tel" placeholder="(11) 91360-2325">
+  <label>Nome</label><input id="nome" placeholder="Digite seu nome">
+  <label>WhatsApp</label><input id="telefone" type="tel" placeholder="(11) 99999-9999">
   <label>Como deseja receber?</label>
   <div class="opcoes"><label class="opcao"><input type="radio" name="recebimento" value="Entrega" checked> 🚚 Entrega</label><label class="opcao"><input type="radio" name="recebimento" value="Retirada"> 🏪 Retirar na loja</label></div>
   <div id="enderecoArea"><label>Endereço</label><input id="endereco" placeholder="Rua, número e bairro"></div>
@@ -78,7 +78,7 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;fon
   <div class="erro" id="erro"></div>
  </div>
 </div>
-
+ 
 <div id="banho" class="esconder">
  <div class="card"><h2>Nossos serviços</h2><div id="servicos"></div></div>
  <div class="card"><h2>Agendar pelo WhatsApp</h2>
@@ -86,13 +86,13 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;fon
   <label>Serviço</label><select id="bS"></select><label>Data</label><input id="bD" type="date"><label>Horário</label><input id="bH" type="time">
   <div class="erro" id="bErro"></div><p><button class="btn" id="bSend">Agendar no WhatsApp</button></p></div>
 </div>
-
+ 
 <div id="admin" class="esconder"></div>
 <p class="rodape"><a href="#" id="abrirAdmin">Área do lojista</a></p>
 </div>
-
+ 
 <div class="resumo" id="barra"><div class="resumo-interno"><div class="total"><small id="qtdTotal">0 itens</small><strong id="valorTotal">R$ 0,00</strong></div><button class="whatsapp" id="enviar" disabled>Enviar no WhatsApp</button></div></div>
-
+ 
 <script>
 const CATS=[
 ["Rações e alimentos","Ração para cães adultos|Ração para filhotes de cachorro|Ração para cães idosos|Ração para cães de pequeno porte|Ração para cães de grande porte|Ração para gatos adultos|Ração para filhotes de gato|Ração para gatos castrados|Ração para gatos idosos|Ração úmida para cães|Ração úmida para gatos|Sachê para gatos|Sachê para cães|Leite substituto para filhotes|Alimentação para coelhos|Ração para hamsters|Ração para pássaros|Alimento para peixes ornamentais"],
@@ -117,7 +117,7 @@ try{GH=JSON.parse(localStorage.getItem("petshop_gh"))}catch(e){}
 const save=()=>{dirty=true;try{localStorage.setItem("petshop_draft",JSON.stringify(S))}catch(e){}};
 const wa=t=>"https://wa.me/"+S.cfg.whats.replace(/\D/g,"")+(t?"?text="+encodeURIComponent(t):"");
 const fix=()=>{S.cfg={...DEF().cfg,...S.cfg};S.nid=Math.max(S.nid||0,...S.prod.map(p=>p.id+1))};
-
+ 
 function show(v){["loja","banho","admin"].forEach(x=>$(x).classList.toggle("esconder",x!=v));
 document.querySelectorAll(".abas button").forEach(b=>b.classList.toggle("on",b.dataset.a==v));
 $("barra").classList.toggle("esconder",v!="loja");if(v=="admin")admin();scrollTo(0,0)}
@@ -130,7 +130,7 @@ function calc(){let it=[],sub=0,n=0;S.prod.forEach(p=>{const k=cart[p.id];if(k>0
 const taxa=val("recebimento")=="Entrega"&&it.length?S.cfg.taxa:0;return{it,sub,n,taxa,total:sub+taxa}}
 function resumo(){const o=calc();$("qtdTotal").textContent=o.n+(o.n==1?" item":" itens");$("valorTotal").textContent=o.total>0?brl(o.total):"R$ 0,00";$("enviar").disabled=!o.it.length}
 function render(){head();produtos();servicos();resumo()}
-
+ 
 function enviarPedido(){const nome=$("nome").value.trim(),tel=$("telefone").value.trim(),end=$("endereco").value.trim(),troco=$("troco").value.trim(),o=calc(),pg=val("pagamento"),ent=val("recebimento")=="Entrega";
 let er=[];if(!nome)er.push("seu nome");if(!tel)er.push("seu WhatsApp");if(ent&&!end)er.push("seu endereço");
 if(er.length){$("erro").textContent="Preencha: "+er.join(", ")+".";return}
@@ -147,11 +147,11 @@ window.open(wa(m+"\nObrigado pelo pedido! 🐾"),"_blank")}
 function enviarBanho(){const n=$("bN").value.trim(),p=$("bP").value.trim();if(!n||!p){$("bErro").textContent="Preencha seu nome e o nome do pet.";return}$("bErro").textContent="";
 const d=$("bD").value?$("bD").value.split("-").reverse().join("/"):"a combinar";
 window.open(wa(`🛁 *AGENDAMENTO - Banho e tosa*\n\n👤 *Tutor:* ${n}\n🐶 *Pet:* ${p}\n📏 *Raça/porte:* ${$("bR").value||"-"}\n✂️ *Serviço:* ${$("bS").value}\n📅 *Data:* ${d}\n⏰ *Horário:* ${$("bH").value||"a combinar"}`),"_blank")}
-
+ 
 /* ---------- ÁREA DO LOJISTA ---------- */
 const API=()=>`https://api.github.com/repos/${GH.u}/${GH.r}/contents/`,HD=()=>({Authorization:"Bearer "+GH.t,Accept:"application/vnd.github+json"});
 function admin(){const A=$("admin"),c=S.cfg;
-if(!GH){A.innerHTML=`<div class="card"><h2>Área do lojista</h2><p>Conecte ao GitHub uma só vez (veja o LEIA-ME). Os dados ficam só neste navegador.</p><label>Usuário do GitHub</label><input id="gU"><label>Nome do repositório</label><input id="gR"><label>Branch</label><input id="gB" value="main"><label>Token de acesso</label><input id="gT" type="password"><p><button class="btn azul" id="login">Conectar</button></p></div>`;return}
+if(!GH){A.innerHTML=`<div class="card"><h2>Área do lojista</h2><p>Conecte ao GitHub uma só vez (veja o LEIA-ME). Os dados ficam só neste navegador.</p><label>Usuário do GitHub</label><input id="gU" value="petloversfagundes"><label>Nome do repositório</label><input id="gR" value="petshop.fagunde"><label>Branch</label><input id="gB" value="main"><label>Token de acesso</label><input id="gT" type="password"><p><button class="btn azul" id="login">Conectar</button></p></div>`;return}
 const f=(k,l,t="text")=>`<label>${l}</label><input type="${t}" data-cfg="${k}" value="${esc(c[k])}">`;
 A.innerHTML=`<div class="card pubbar"><span>${dirty?"Há alterações não publicadas.":"Tudo publicado."}</span><button class="btn amarelo" id="pub">Publicar alterações</button></div>
 <div class="card"><h2>Dados da loja</h2>${f("loja","Nome da loja")}${f("whats","WhatsApp (55 + DDD + número)")}${f("pix","Chave Pix")}${f("pixNome","Nome do recebedor do Pix")}${f("taxa","Taxa de entrega (R$)","number")}${f("hor","Horário de atendimento")}${f("end","Endereço da loja")}</div>
@@ -173,7 +173,7 @@ try{let sha;const g=await fetch(u+"?ref="+GH.b,{headers:HD()});if(g.ok)sha=(awai
 const body={message:"Atualização pelo painel",branch:GH.b,content:btoa(unescape(encodeURIComponent(JSON.stringify(S))))};if(sha)body.sha=sha;
 const r=await fetch(u,{method:"PUT",headers:HD(),body:JSON.stringify(body)});if(!r.ok)throw 0;
 dirty=false;try{localStorage.removeItem("petshop_draft")}catch(e){}alert("Publicado! Aparece no site em cerca de 1 minuto.")}catch(e){alert("Não foi possível publicar. Confira o token (Contents: Read and write).")}admin()}
-
+ 
 /* ---------- EVENTOS ---------- */
 document.addEventListener("click",e=>{const b=e.target.closest("button,a");if(!b)return;const d=b.dataset;
 if(b.id=="abrirAdmin"){e.preventDefault();show("admin")}
@@ -207,7 +207,7 @@ else if(d.pp)P(d.pp).p=+t.value||0;
 else if(d.pc)P(d.pc).c=t.value;
 else return;
 save();head();produtos();servicos();resumo()});
-
+ 
 $("cat").innerHTML='<option value="">Todas as categorias</option>'+CATS.map(x=>`<option>${esc(x[0])}</option>`).join("");
 render();
 fetch("dados.json?v="+Date.now()).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.prod){S=d;fix()}
@@ -216,3 +216,4 @@ render()}).catch(()=>{});
 </script>
 </body>
 </html>
+ 
