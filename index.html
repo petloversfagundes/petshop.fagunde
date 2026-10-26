@@ -30,7 +30,7 @@ h1{text-align:center;margin-bottom:5px}
 .formulario{background:#fff;margin-top:25px;padding:20px;border-radius:15px}
 .formulario h2,.card h2{margin-top:0}
 label{display:block;font-weight:bold;margin-top:15px;margin-bottom:5px}
-input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px;background:#fff;font-family:inherit}
+input,select{width:100%;padding:12px;border:1px solid #aaa;border-radius:8px;font-size:16px;background-color:#fff;color:#222;font-family:inherit;opacity:1}select{color:#222!important;-webkit-text-fill-color:#222;appearance:auto;min-height:46px}select option{background:#fff!important;color:#222!important}
 .opcoes{display:flex;gap:10px;flex-wrap:wrap}
 .opcao{flex:1;min-width:120px;padding:12px;background:#f3f3f3;border-radius:8px;cursor:pointer;margin:0}
 .opcao input{width:auto}
@@ -94,36 +94,63 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;fon
 <div class="resumo" id="barra"><div class="resumo-interno"><div class="total"><small id="qtdTotal">0 itens</small><strong id="valorTotal">R$ 0,00</strong></div><button class="whatsapp" id="enviar" disabled>Enviar no WhatsApp</button></div></div>
 
 <script>
-const CATS=[
-["Rações e alimentos","Ração para cães adultos|Ração para filhotes de cachorro|Ração para cães idosos|Ração para cães de pequeno porte|Ração para cães de grande porte|Ração para gatos adultos|Ração para filhotes de gato|Ração para gatos castrados|Ração para gatos idosos|Ração úmida para cães|Ração úmida para gatos|Sachê para gatos|Sachê para cães|Leite substituto para filhotes|Alimentação para coelhos|Ração para hamsters|Ração para pássaros|Alimento para peixes ornamentais"],
-["Petiscos","Bifinhos para cães|Biscoitos para cães|Petiscos para gatos|Petiscos cremosos para gatos|Ossinhos mastigáveis próprios para cães|Snacks para saúde bucal|Petiscos naturais para cães|Petiscos para treinamento|Palitos mastigáveis|Molho para ração|Snacks para coelhos|Petiscos para roedores"],
-["Higiene e limpeza","Tapete higiênico para cães|Fraldas para cães|Lenços umedecidos para pets|Shampoo para cães|Shampoo para gatos|Condicionador para pets|Shampoo a seco para pets|Sabonete para pets|Colônia para cães|Eliminador de odores|Desinfetante próprio para ambientes com animais|Areia higiênica para gatos|Sílica para gatos|Pá para recolher areia|Saco coletor de fezes|Educador sanitário para pets|Limpador de patas|Escova dental para pets"],
-["Acessórios","Coleira para cães|Coleira para gatos|Guia para passeio|Guia retrátil|Peitoral para cães|Peitoral para gatos|Identificador de coleira|Comedouro de plástico|Comedouro de inox|Comedouro lento|Bebedouro para pets|Bebedouro portátil|Garrafa de água para passeio|Porta-sachê|Porta-sacos para fezes|Cinto de segurança para pets|Grade de proteção para ambientes|Portão de segurança para pets"],
-["Brinquedos","Bolinha para cães|Corda para cães|Mordedor para cães|Brinquedo de pelúcia|Brinquedo interativo|Brinquedo dispensador de petiscos|Túnel para gatos|Ratinho de brinquedo para gatos|Varinha com penas para gatos|Bolinha com guizo|Arranhador para gatos|Circuito de brinquedo para gatos"],
-["Camas e transporte","Caminha para cães|Caminha para gatos|Colchonete para pets|Almofada para pets|Cobertor para animais|Casinha para cães|Toca para gatos|Caixa de transporte para cães|Caixa de transporte para gatos|Bolsa de transporte para pets|Mochila de transporte para animais|Capa protetora para banco de carro"],
-["Escovação e cuidados","Escova para pelos|Rasqueadeira|Pente para pets|Luva removedora de pelos|Cortador de unhas para pets|Lixa de unhas para pets|Tesoura de tosa|Máquina de tosa|Toalha para pets|Secador próprio para pets|Escova removedora de pelos de roupas|Tapete coletor de areia para gatos"],
-["Roupas e outros animais","Roupa para cães|Capa de chuva para cães|Bandana para pets|Sapatinhos para cães|Gaiola para hamsters|Enfeites para aquário"]];
-const ICON=["🍖","🦴","🧼","🦮","🎾","🛏️","🪮","👕"];
+const CATS = [
+  ["Rações sacaria cães", "Ração para cães adultos - saco|Ração para filhotes de cachorro - saco|Ração para cães idosos - saco|Ração para cães de pequeno porte - saco|Ração para cães de grande porte - saco|Ração premium para cães - saco|Ração para cães castrados - saco"],
+
+  ["Rações sacaria gatos", "Ração para gatos adultos - saco|Ração para filhotes de gato - saco|Ração para gatos castrados - saco|Ração para gatos idosos - saco|Ração premium para gatos - saco|Ração para gatos - saco"],
+
+  ["Rações cães granel / Por kg", "Ração para cães adultos - por kg|Ração para filhotes de cachorro - por kg|Ração para cães pequenos - por kg|Ração para cães grandes - por kg|Ração para cães - granel"],
+
+  ["Rações gatos granel / Por kg", "Ração para gatos adultos - por kg|Ração para filhotes de gato - por kg|Ração para gatos castrados - por kg|Ração para gatos - granel"],
+
+  ["Brinquedos cães", "Bolinha para cães|Corda para cães|Mordedor para cães|Brinquedo de pelúcia para cães|Brinquedo interativo para cães|Brinquedo dispensador de petiscos para cães"],
+
+  ["Brinquedos gatos", "Ratinho de brinquedo para gatos|Varinha com penas para gatos|Bolinha com guizo para gatos|Túnel para gatos|Arranhador para gatos|Circuito de brinquedo para gatos"],
+
+  ["Medicamentos", "Antipulgas para cães|Antipulgas para gatos|Vermífugo para cães|Vermífugo para gatos|Antisséptico veterinário|Medicamento veterinário"]
+];
+
+const ICON = ["🐶", "🐱", "⚖️", "⚖️", "🎾", "🐈", "💊"];
 const DEF=()=>{let id=0,p=[];CATS.forEach(([c,l])=>l.split("|").forEach(n=>p.push({id:++id,n,d:"",p:0,c,f:""})));
 return{cfg:{loja:"Meu Pet Shop",whats:"5511999999999",pix:"11999999999",pixNome:"Meu Pet Shop",taxa:8,end:"",hor:""},
 serv:[{n:"Banho - porte pequeno",p:40},{n:"Banho - porte médio",p:60},{n:"Banho - porte grande",p:85},{n:"Tosa higiênica",p:30},{n:"Tosa completa",p:70},{n:"Corte de unhas",p:15}],prod:p,nid:id+1}};
 const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const brl=v=>v>0?v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}):"Consultar";
 const val=n=>document.querySelector(`input[name="${n}"]:checked`).value;
-const ci=c=>Math.max(0,CATS.findIndex(x=>x[0]==c));
-const catOpts=sel=>CATS.map(x=>`<option ${x[0]==sel?"selected":""}>${esc(x[0])}</option>`).join("");
+const ci=c=>{const i=CATS.findIndex(x=>x[0]===c);return i<0?0:i};
+const catOpts=sel=>CATS.map(x=>`<option value="${esc(x[0])}" ${x[0]===sel?"selected":""}>${esc(x[0])}</option>`).join("");
 let S=DEF(),GH=null,dirty=false,cart={},q="",fc="",FOTOS={};
 try{GH=JSON.parse(localStorage.getItem("petshop_gh"))}catch(e){}
 const save=()=>{dirty=true;try{localStorage.setItem("petshop_draft",JSON.stringify(S))}catch(e){}};
 const wa=t=>"https://wa.me/"+S.cfg.whats.replace(/\D/g,"")+(t?"?text="+encodeURIComponent(t):"");
-const fix=()=>{S.cfg={...DEF().cfg,...S.cfg};S.nid=Math.max(S.nid||0,...S.prod.map(p=>p.id+1))};
+const fix=()=>{
+  const defaults=DEF();
+  S=S&&typeof S==="object"?S:defaults;
+  S.cfg={...defaults.cfg,...(S.cfg||{})};
+  S.serv=Array.isArray(S.serv)?S.serv:defaults.serv;
+  S.prod=(Array.isArray(S.prod)?S.prod:[]).map((p,i)=>{
+    p=p&&typeof p==="object"?p:{};
+    let cat=String(p.c||"");
+    const name=String(p.n||"Produto sem nome");
+    // Corrige categorias antigas automaticamente usando o nome do produto.
+    if(!CATS.some(x=>x[0]===cat)){
+      const n=name.toLocaleLowerCase("pt-BR");
+      if(/brinquedo|bolinha|corda|mordedor|ratinho|varinha|guizo|túnel|arranhador|circuito/.test(n)) cat=/gato|ratinho|varinha|guizo|túnel|arranhador|circuito/.test(n)?"Brinquedos gatos":"Brinquedos cães";
+      else if(/medicamento|antipulgas|vermífugo|antisséptico|remédio/.test(n)) cat="Medicamentos";
+      else if(/gato|felino/.test(n)) cat=/granel|por kg|kg/.test(n)?"Rações gatos granel / Por kg":"Rações sacaria gatos";
+      else if(/ração|racao|cão|cães|cachorro|filhote/.test(n)) cat=/granel|por kg|kg/.test(n)?"Rações cães granel / Por kg":"Rações sacaria cães";
+    }
+    return {id:Number.isFinite(Number(p.id))?Number(p.id):i+1,n:name,d:String(p.d||""),p:Math.max(0,Number(p.p)||0),c:cat,f:String(p.f||""),e:p.e===undefined||p.e===null||p.e===""?null:Math.max(0,parseInt(p.e,10)||0)};
+  });
+  S.nid=Math.max(Number(S.nid)||0,1,...S.prod.map(p=>p.id+1));
+};
 
 function show(v){["loja","banho","admin"].forEach(x=>$(x).classList.toggle("esconder",x!=v));
 document.querySelectorAll(".abas button").forEach(b=>b.classList.toggle("on",b.dataset.a==v));
 $("barra").classList.toggle("esconder",v!="loja");if(v=="admin")admin();scrollTo(0,0)}
 function head(){const c=S.cfg;$("nomeLoja").textContent="🐾 "+c.loja;document.title=c.loja+" | Pedido";$("pixChave").textContent=c.pix;
 $("sub").innerHTML="Escolha os produtos e faça seu pedido pelo WhatsApp"+(c.hor?"<br>"+esc(c.hor):"")+(c.end?"<br>"+esc(c.end):"")}
-function produtos(){const L=S.prod.filter(p=>(!fc||p.c==fc)&&p.n.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>a.n.localeCompare(b.n,"pt-BR"));
+function produtos(){const termo=String(q||"").trim().toLocaleLowerCase("pt-BR");const L=S.prod.filter(p=>(!fc||p.c===fc)&&String(p.n||"").toLocaleLowerCase("pt-BR").includes(termo)).sort((a,b)=>String(a.n||"").localeCompare(String(b.n||""),"pt-BR"));
 $("produtos").innerHTML=L.length?L.map(p=>`<div class="produto"><div class="foto"><span class="sem-foto">${ICON[ci(p.c)]}</span>${p.f?`<img loading="lazy" src="${esc(FOTOS[p.f]||p.f)}" alt="${esc(p.n)}" onerror="this.remove()">`:""}</div><div class="info"><div class="nome">${esc(p.n)}</div><div class="descricao">${esc(p.d)}</div><div class="preco">${brl(p.p)}</div><div class="quantidade"><button data-m="${p.id}" data-v="-1">−</button><span id="q${p.id}">${cart[p.id]||0}</span><button data-m="${p.id}" data-v="1">+</button></div></div></div>`).join(""):"<p>Nenhum produto encontrado.</p>"}
 function servicos(){$("servicos").innerHTML=S.serv.map(s=>`<div class="serv"><span>${esc(s.n)}</span><b>${brl(s.p)}</b></div>`).join("");$("bS").innerHTML=S.serv.map(s=>`<option>${esc(s.n)}</option>`).join("")}
 function calc(){let it=[],sub=0,n=0;S.prod.forEach(p=>{const k=cart[p.id];if(k>0){it.push({p,k});sub+=p.p*k;n+=k}});
@@ -178,6 +205,7 @@ dirty=false;try{localStorage.removeItem("petshop_draft")}catch(e){}alert("Public
 document.addEventListener("click",e=>{const b=e.target.closest("button,a");if(!b)return;const d=b.dataset;
 if(b.id=="abrirAdmin"){e.preventDefault();show("admin")}
 else if(d.a)show(d.a)
+
 else if(d.m){const id=d.m;cart[id]=Math.max(0,(cart[id]||0)+ +d.v);$("q"+id).textContent=cart[id];resumo()}
 else if(b.id=="enviar")enviarPedido()
 else if(b.id=="bSend")enviarBanho()
@@ -208,7 +236,7 @@ else if(d.pc)P(d.pc).c=t.value;
 else return;
 save();head();produtos();servicos();resumo()});
 
-$("cat").innerHTML='<option value="">Todas as categorias</option>'+CATS.map(x=>`<option>${esc(x[0])}</option>`).join("");
+$("cat").innerHTML='<option value="">Em todas categorias</option>'+CATS.map(x=>`<option value="${esc(x[0])}">${esc(x[0])}</option>`).join("");
 render();
 if(location.hash=="#admin")show("admin");
 fetch("dados.json?v="+Date.now()).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.prod){S=d;fix()}
