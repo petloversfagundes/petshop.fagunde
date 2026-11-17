@@ -13,6 +13,7 @@ h1{text-align:center;margin-bottom:5px}
 .abas{display:flex;gap:8px;margin-bottom:15px}
 .abas button{flex:1;padding:12px;border:none;border-radius:10px;background:#e4e4e4;font-size:16px;font-weight:bold;cursor:pointer}
 .abas button.on{background:#0b4f5c;color:#fff}
+.atalho-dados{position:fixed;right:18px;bottom:112px;z-index:150;width:62px;height:62px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;border-radius:50%;background:#0b4f5c;color:#fff;box-shadow:0 3px 12px rgba(0,0,0,.28);font-size:27px;font-weight:bold;text-decoration:none;cursor:grab;touch-action:none;user-select:none}.atalho-dados:active{cursor:grabbing}.atalho-dados small{position:absolute;top:66px;left:50%;transform:translateX(-50%);padding:4px 7px;border-radius:6px;background:#fff;color:#0b4f5c;box-shadow:0 1px 5px #0002;font-size:10px;white-space:nowrap;pointer-events:none}
 .filtros{display:flex;gap:8px;margin-bottom:15px}
 .produtos{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
 .produto,.card{background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -60,11 +61,12 @@ input,select{width:100%;padding:12px;border:1px solid #aaa;border-radius:8px;fon
 <h1 id="nomeLoja">Pet Shop</h1>
 <p class="subtitulo" id="sub">Escolha os produtos e faça seu pedido pelo WhatsApp 🐾</p>
 <div class="abas"><button data-a="loja" class="on">Produtos</button><button data-a="banho">Banho e tosa</button></div>
+<a href="#dadosPedido" class="atalho-dados" id="irDadosPedido" role="button" aria-label="Arraste esta bolinha para qualquer lugar. Toque para ir aos seus dados." title="Arraste para mover; toque para ir aos seus dados">↓<small>Meus dados</small></a>
 
 <div id="loja">
  <div class="filtros"><input id="busca" placeholder="Buscar produto..."><select id="cat"></select></div>
  <div class="produtos" id="produtos"></div>
- <div class="formulario">
+ <div class="formulario" id="dadosPedido">
   <h2>Seus dados</h2>
   <label>Nome</label><input id="nome" placeholder="Digite seu nome">
   <label>WhatsApp</label><input id="telefone" type="tel" placeholder="(11) 99999-9999">
@@ -83,12 +85,12 @@ input,select{width:100%;padding:12px;border:1px solid #aaa;border-radius:8px;fon
  <div class="card"><h2>Nossos serviços</h2><div id="servicos"></div></div>
  <div class="card"><h2>Agendar pelo WhatsApp</h2>
   <label>Seu nome</label><input id="bN"><label>Nome do pet</label><input id="bP"><label>Raça e porte</label><input id="bR">
-  <label>Serviço</label><select id="bS"></select><label>Data</label><input id="bD" type="date"><label>Horário</label><input id="bH" type="time">
+  <label>Serviço</label><select id="bS"></select><label>Data</label><input id="bD" type="date"><div style="display:block;margin:10px 0 14px;padding:12px 14px;background:#fff1f0;border:2px solid #d93025;border-left:7px solid #d93025;border-radius:8px;color:#9b1c16;font-size:15px;font-weight:800;line-height:1.45">⚠️ Atendimento somente de terça a sábado. Não há agendamento às segundas-feiras e aos domingos.</div><label>Horário</label><select id="bH"><option value="">Selecione primeiro a data</option></select><small id="bVagas" style="display:block;margin-top:7px;color:#666">Escolha uma data para consultar os horários.</small>
   <div class="erro" id="bErro"></div><p><button class="btn" id="bSend">Agendar no WhatsApp</button></p></div>
 </div>
 
 <div id="admin" class="esconder"></div>
-<p class="rodape"><a href="#" id="abrirAdmin">Área do lojista</a></p>
+<p class="rodape"><a href="#" id="goDadosLoja" style="display:inline-block;margin-right:14px;text-decoration:none;color:#0b4f5c;font-weight:bold">↓ Dados da Loja</a><a href="#" id="abrirAdmin">Área do lojista</a></p>
 </div>
 
 <div class="resumo" id="barra"><div class="resumo-interno"><div class="total"><small id="qtdTotal">0 itens</small><strong id="valorTotal">R$ 0,00</strong></div><button class="whatsapp" id="enviar" disabled>Enviar no WhatsApp</button></div></div>
@@ -187,9 +189,46 @@ if(pg=="Pix")m+=`🔑 *Chave Pix:* ${c.pix}\n🏪 *Recebedor:* ${c.pixNome}\n�
 if(pg=="Dinheiro"&&troco)m+=`💵 *Troco para:* R$ ${troco}\n`;
 m+=ent?`\n🚚 *Entrega*\n📍 *Endereço:* ${end}\n`:`\n🏪 *Retirada na loja*\n`;
 window.open(wa(m+"\nObrigado pelo pedido! 🐾"),"_blank")}
-function enviarBanho(){const n=$("bN").value.trim(),p=$("bP").value.trim();if(!n||!p){$("bErro").textContent="Preencha seu nome e o nome do pet.";return}$("bErro").textContent="";
-const d=$("bD").value?$("bD").value.split("-").reverse().join("/"):"a combinar";
-window.open(wa(`🛁 *AGENDAMENTO - Banho e tosa*\n\n👤 *Tutor:* ${n}\n🐶 *Pet:* ${p}\n📏 *Raça/porte:* ${$("bR").value||"-"}\n✂️ *Serviço:* ${$("bS").value}\n📅 *Data:* ${d}\n⏰ *Horário:* ${$("bH").value||"a combinar"}`),"_blank")}
+const HORARIOS_BANHO=["09:00","10:00","11:00","13:00","14:00","15:00"];
+function diaPermitidoBanho(data){
+  if(!data)return false;
+  const dia=new Date(data+"T12:00:00").getDay();
+  return dia>=2&&dia<=6;
+}
+function atualizarHorariosBanho(){
+  const data=$("bD").value,sel=$("bH"),aviso=$("bVagas");
+  if(!data){
+    sel.innerHTML='<option value="">Selecione primeiro a data</option>';
+    aviso.textContent="Escolha uma data para ver os horários.";
+    return;
+  }
+  if(!diaPermitidoBanho(data)){
+    sel.innerHTML='<option value="">Escolha uma data de terça a sábado</option>';
+    aviso.textContent="Atendimento somente de terça a sábado.";
+    return;
+  }
+  sel.innerHTML='<option value="">Selecione um horário</option>'+HORARIOS_BANHO.map(h=>`<option value="${h}">${h}</option>`).join("");
+  aviso.textContent="Escolha o horário desejado. A confirmação será feita pelo WhatsApp.";
+}
+function enviarBanho(){
+  const n=$("bN").value.trim(),p=$("bP").value.trim(),data=$("bD").value,h=$("bH").value;
+  if(!n||!p||!data||!h){
+    $("bErro").textContent="Preencha seu nome, o nome do pet, a data e escolha um horário.";
+    return;
+  }
+  if(!diaPermitidoBanho(data)){
+    $("bErro").textContent="Atendimento somente de terça a sábado.";
+    atualizarHorariosBanho();
+    return;
+  }
+  if(!HORARIOS_BANHO.includes(h)){
+    $("bErro").textContent="Escolha um dos horários apresentados.";
+    return;
+  }
+  $("bErro").textContent="";
+  const d=data.split("-").reverse().join("/");
+  window.open(wa(`🛁 *AGENDAMENTO - Banho e tosa*\n\n👤 *Tutor:* ${n}\n🐶 *Pet:* ${p}\n📏 *Raça/porte:* ${$("bR").value||"-"}\n✂️ *Serviço:* ${$("bS").value}\n📅 *Data:* ${d}\n⏰ *Horário:* ${h}\n\n⚠️ Solicitação de agendamento. Aguarde a confirmação pelo WhatsApp.`),"_blank");
+}
 
 /* ---------- ÁREA DO LOJISTA ---------- */
 const API=()=>`https://api.github.com/repos/${GH.u}/${GH.r}/contents/`,HD=()=>({Authorization:"Bearer "+GH.t,Accept:"application/vnd.github+json"});
@@ -197,7 +236,7 @@ function admin(){const A=$("admin"),c=S.cfg;
 if(!GH){A.innerHTML=`<div class="card"><h2>Área do lojista</h2><p>Conecte ao GitHub uma só vez (veja o LEIA-ME). Os dados ficam só neste navegador.</p><label>Usuário do GitHub</label><input id="gU" value="petloversfagundes"><label>Nome do repositório</label><input id="gR" value="petshop.fagunde"><label>Branch</label><input id="gB" value="main"><label>Token de acesso</label><input id="gT" type="password"><p><button class="btn azul" id="login">Conectar</button></p></div>`;return}
 const f=(k,l,t="text")=>`<label>${l}</label><input type="${t}" data-cfg="${k}" value="${esc(c[k])}">`;
 A.innerHTML=`<div class="card pubbar"><span>${dirty?"Há alterações não publicadas.":"Tudo publicado."}</span><button class="btn amarelo" id="pub">Publicar alterações</button></div>
-<div class="card"><h2>Dados da loja</h2>${f("loja","Nome da loja")}${f("whats","WhatsApp (55 + DDD + número)")}${f("pix","Chave Pix")}${f("pixNome","Nome do recebedor do Pix")}${f("taxa","Taxa de entrega (R$)","number")}${f("hor","Horário de atendimento")}${f("end","Endereço da loja")}</div>
+<div class="card" id="dadosLoja"><h2>Dados da loja</h2>${f("loja","Nome da loja")}${f("whats","WhatsApp (55 + DDD + número)")}${f("pix","Chave Pix")}${f("pixNome","Nome do recebedor do Pix")}${f("taxa","Taxa de entrega (R$)","number")}${f("hor","Horário de atendimento")}${f("end","Endereço da loja")}</div>
 <div class="card"><h2>Banho e tosa</h2>${S.serv.map((s,i)=>`<div class="row2" style="margin-bottom:6px"><input style="flex:2" data-sn="${i}" value="${esc(s.n)}"><input style="flex:1" type="number" min="0" step="0.01" data-sp="${i}" value="${s.p}"><button class="btn red" style="padding:8px" data-sd="${i}">X</button></div>`).join("")}<button class="btn amarelo" id="sAdd">Novo serviço</button></div>
 <div class="card"><h2>Produtos (${S.prod.length})</h2><p><button class="btn amarelo" id="pAdd">Novo produto</button></p><input id="aq" placeholder="Buscar produto para editar..."><div id="alist"></div></div>
 <p style="text-align:center"><button class="btn azul" id="logout">Desconectar do GitHub</button></p>`;alist()}
@@ -217,9 +256,49 @@ const body={message:"Atualização pelo painel",branch:GH.b,content:btoa(unescap
 const r=await fetch(u,{method:"PUT",headers:HD(),body:JSON.stringify(body)});if(!r.ok)throw 0;
 dirty=false;try{localStorage.removeItem("petshop_draft")}catch(e){}alert("Publicado! Aparece no site em cerca de 1 minuto.")}catch(e){alert("Não foi possível publicar. Confira o token (Contents: Read and write).")}admin()}
 
+/* ---------- BOLINHA FLUTUANTE DE ATALHO ---------- */
+(()=>{
+  const el=$("irDadosPedido");
+  if(!el)return;
+  let inicioX=0,inicioY=0,origemX=0,origemY=0,arrastou=false,ativo=false;
+  try{
+    const pos=JSON.parse(localStorage.getItem("petshop_bolinha_pos")||"null");
+    if(pos&&Number.isFinite(pos.left)&&Number.isFinite(pos.top)){
+      el.style.left=Math.max(0,Math.min(innerWidth-62,pos.left))+"px";
+      el.style.top=Math.max(0,Math.min(innerHeight-62,pos.top))+"px";
+      el.style.right="auto";el.style.bottom="auto";
+    }
+  }catch(e){}
+  el.addEventListener("pointerdown",e=>{
+    ativo=true;arrastou=false;inicioX=e.clientX;inicioY=e.clientY;
+    const r=el.getBoundingClientRect();origemX=r.left;origemY=r.top;
+    el.setPointerCapture(e.pointerId);e.preventDefault();
+  });
+  el.addEventListener("pointermove",e=>{
+    if(!ativo)return;
+    const dx=e.clientX-inicioX,dy=e.clientY-inicioY;
+    if(Math.abs(dx)>4||Math.abs(dy)>4)arrastou=true;
+    if(!arrastou)return;
+    const x=Math.max(0,Math.min(innerWidth-el.offsetWidth,origemX+dx));
+    const y=Math.max(0,Math.min(innerHeight-el.offsetHeight,origemY+dy));
+    el.style.left=x+"px";el.style.top=y+"px";el.style.right="auto";el.style.bottom="auto";
+  });
+  const finalizar=e=>{
+    if(!ativo)return;ativo=false;
+    if(arrastou){
+      try{const r=el.getBoundingClientRect();localStorage.setItem("petshop_bolinha_pos",JSON.stringify({left:r.left,top:r.top}))}catch(e){}
+    }else{
+      e.preventDefault();$("dadosPedido").scrollIntoView({behavior:"smooth",block:"start"});
+    }
+  };
+  el.addEventListener("pointerup",finalizar);
+  el.addEventListener("pointercancel",()=>{ativo=false});
+})();
+
 /* ---------- EVENTOS ---------- */
 document.addEventListener("click",e=>{const b=e.target.closest("button,a");if(!b)return;const d=b.dataset;
 if(b.id=="abrirAdmin"){e.preventDefault();show("admin")}
+else if(b.id=="goDadosLoja"){e.preventDefault();show("admin");requestAnimationFrame(()=>$("dadosLoja")?.scrollIntoView({behavior:"smooth",block:"start"}))}
 else if(d.a)show(d.a)
 
 else if(d.m){const id=d.m;cart[id]=Math.max(0,(cart[id]||0)+ +d.v);$("q"+id).textContent=cart[id];resumo()}
@@ -237,7 +316,7 @@ else if(d.del){if(confirm("Excluir este produto?")){S.prod=S.prod.filter(p=>p.id
 document.addEventListener("change",e=>{const t=e.target,d=t.dataset;
 if(t.name=="recebimento"){$("enderecoArea").classList.toggle("esconder",t.value!="Entrega");resumo()}
 else if(t.name=="pagamento"){$("trocoArea").classList.toggle("esconder",t.value!="Dinheiro");$("pixArea").classList.toggle("esconder",t.value!="Pix")}
-else if(t.id=="cat"){fc=t.value;produtos()}
+else if(t.id=="cat"){fc=t.value;produtos()}else if(t.id=="bD"){$("bErro").textContent="";atualizarHorariosBanho()}
 else if(d.pf)foto(d.pf,t.files[0])});
 document.addEventListener("input",e=>{const t=e.target,d=t.dataset,P=id=>S.prod.find(p=>p.id==id);
 if(t.id=="busca"){q=t.value;produtos();return}
@@ -253,6 +332,8 @@ else return;
 save();head();produtos();servicos();resumo()});
 
 $("cat").innerHTML='<option value="">Em todas categorias</option>'+CATS.map(x=>`<option value="${esc(x[0])}">${esc(x[0])}</option>`).join("");
+$("bD").min=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+atualizarHorariosBanho();
 render();
 if(location.hash=="#admin")show("admin");
 fetch("dados.json?v="+Date.now()).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.prod){S=d;fix()}
